@@ -141,3 +141,16 @@ def update_tarea(id):
     except sqlite3.Error as e:
         conn.close()
         return jsonify({"error": str(e)}), 500
+
+#---Ednpoint para ELIMINAR una tarea (DELETE)---
+@app.route('/tareas/<int:id>', methods=['DELETE'])
+def delete_tarea(id):
+    conn = get_db_connection()
+    cursor = conn.execute('DELETE FROM tareas WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+    
+    #cursor.rowcount nos dice cuantas filas fueron afectadas
+    if cursor.rowcount == 0:
+        return jsonify({"message": "Tarea no encontrada"}), 404
+    return jsonify({"message": f"Tarea con ID {id} eliminada exitosamente"}), 200
