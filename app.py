@@ -96,24 +96,27 @@ def create_tarea():
 
 @app.route('/tareas/<int:id>', methods=['PUT'])
 def update_tarea(id):
-    data = request.getjson()
-    
+    data = request.get_json()
+
+    # MEJORA 1: Validar que el JSON no esté vacío
+    if data is None:
+        return jsonify({"error": "No se recibió un cuerpo JSON válido"}), 400
+
     #Verfifica que campos se queiren actrualizar
     titulo = data.get('titulo')
     descripcion = data.get('descripcion')
     estado = data.get('estado')
-    
+
     conn = get_db_connection()
-    
+
     # Primero hay que verificar si la tarea existe
-    tarea_existente = conn.execute('SELECT * FROM tareas WHERE id= ?', (id,)).fetchone()
+    tarea_existente = conn.execute('SELECT * FROM tareas WHERE id = ?', (id,)).fetchone()
     if tarea_existente is None:
         conn.close()
         return jsonify({"message": "Tarea no encontrada"}), 404
 
-# Construir consulta SQL dinamicamente
-
-    query = "UPDATE tareas SET"
+    # Construir consulta SQL dinamicamente
+    query = "UPDATE tareas SET "
     params = []
 
     if titulo is not None:
@@ -126,8 +129,13 @@ def update_tarea(id):
         query += "estado = ?, "
         params.append(estado)
 
-    # quita la coma  el espacio extra del final
-    query = query.rstrip(', ') + " WHERE if = ?"
+    # MEJORA 2: Validar si no se enviaron campos
+    if not params:
+        conn.close()
+        return jsonify({"error": "No hay campos para actualizar"}), 400
+
+    # Bug CRÍTICO CORREGIDO: "if = ?" cambiado a "id = ?"
+    query = query.rstrip(', ') + " WHERE id = ?"
     params.append(id)
 
     try:
@@ -135,13 +143,17 @@ def update_tarea(id):
         conn.commit()
         
         #devuelve la tarea actualizada
-        update_tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (id)).fetchone()
+        # MEJORA 3: Renombrada la variable y AÑADIDO EL RETURN
+        updated_tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (id,)).fetchone()
         conn.close()
+        
+        # ¡Esta línea faltaba!
+        return jsonify(dict(updated_tarea)) 
 
     except sqlite3.Error as e:
         conn.close()
         return jsonify({"error": str(e)}), 500
-
+    
 #---Ednpoint para ELIMINAR una tarea (DELETE)---
 @app.route('/tareas/<int:id>', methods=['DELETE'])
 def delete_tarea(id):
