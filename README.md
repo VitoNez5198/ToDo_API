@@ -30,10 +30,10 @@ cd ToDo_API
 
 ### 3. Crear y Activar el entorno Virtual
 
-# Crear el entorno virtual
+### Crear el entorno virtual
 `python -m venv venv`
 
-# Activar en Windows (Git Bash)
+### Activar en Windows (Git Bash)
 `source venv/Scripts/activate`
 
 
