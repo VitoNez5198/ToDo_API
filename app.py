@@ -35,3 +35,27 @@ with app.app_context():
 @app.route('/')
 def index():
     return "API To-Do List está funcionando!"
+
+# --- Endpoint para OBTENER TODAS las tareas (GET) ---
+@app.route('/tareas', methods=['GET'])
+def get_all_tareas():
+    conn = get_db_connection()
+    tareas_cursor = conn.execute('SELECT * FROM tareas').fetchall()
+    conn.close()
+
+    # Convierte los resultados a una lista de diccionarios
+    tareas_list = [dict(tarea) for tarea in tareas_cursor]
+
+    return jsonify(tareas_list)
+
+# --- Endpoint para OBTENER UNA tarea por ID (GET) ---
+@app.route('/tareas/<int:id>', methods=['GET'])
+def get_tarea(id):
+    conn = get_db_connection()
+    tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (id,)).fetchone()
+    conn.close()
+
+    if tarea is None:
+        return jsonify({"message": "Tarea no encontrada"}), 404
+
+    return jsonify(dict(tarea))
