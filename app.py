@@ -59,3 +59,33 @@ def get_tarea(id):
         return jsonify({"message": "Tarea no encontrada"}), 404
 
     return jsonify(dict(tarea))
+
+# --- Endpoint para CREAR una nueva tarea (POST) ---
+@app.route('/tareas', methods=['POST'])
+def create_tarea():
+    data = request.get_json() 
+
+    if not data or 'titulo' not in data:
+        return jsonify({"error": "El campo 'titulo' es requerido"}), 400
+
+    titulo = data['titulo']
+    descripcion = data.get('descripcion') # .get() es más seguro
+
+    conn = get_db_connection()
+    try:
+        cursor = conn.execute(
+            'INSERT INTO tareas (titulo, descripcion) VALUES (?, ?)',
+            (titulo, descripcion)
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
+
+        # Devuelve la tarea recién creada
+        new_tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (new_id,)).fetchone()
+        conn.close()
+
+        return jsonify(dict(new_tarea)), 201 # 201 = Created
+
+    except sqlite3.Error as e:
+        conn.close()
+        return jsonify({"error": str(e)}), 500
