@@ -24,8 +24,8 @@ Sigue estos pasos para levantar el proyecto localmente.
 ### 2. Clonar el Repositorio
 
 ```
-git clone [https://github.com/](https://github.com/)[TU_USUARIO]/[TU_REPO].git
-cd [TU_REPO]
+git clone https://github.com/VitoNez5198/ToDo_API.git
+cd ToDo_API
 ```
 
 ### 3. Crear y Activar el entorno Virtual
