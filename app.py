@@ -84,6 +84,7 @@ def create_tarea():
         new_tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (new_id,)).fetchone()
         conn.close()
 
+
         return jsonify(dict(new_tarea)), 201 # 201 = Created
 
     except sqlite3.Error as e:
