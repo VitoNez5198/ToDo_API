@@ -90,3 +90,54 @@ def create_tarea():
     except sqlite3.Error as e:
         conn.close()
         return jsonify({"error": str(e)}), 500
+    
+
+#---Endpoint para Actualizar una tarea (PUT)---
+
+@app.route('/tareas/<int:id>', methods=['PUT'])
+def update_tarea(id):
+    data = request.getjson()
+    
+    #Verfifica que campos se queiren actrualizar
+    titulo = data.get('titulo')
+    descripcion = data.get('descripcion')
+    estado = data.get('estado')
+    
+    conn = get_db_connection()
+    
+    # Primero hay que verificar si la tarea existe
+    tarea_existente = conn.execute('SELECT * FROM tareas WHERE id= ?', (id,)).fetchone()
+    if tarea_existente is None:
+        conn.close()
+        return jsonify({"message": "Tarea no encontrada"}), 404
+
+# Construir consulta SQL dinamicamente
+
+    query = "UPDATE tareas SET"
+    params = []
+
+    if titulo is not None:
+        query += "titulo = ?, "
+        params.append(titulo)
+    if descripcion is not None:
+        query += "descripcion = ?, "
+        params.append(descripcion)
+    if estado is not None:
+        query += "estado = ?, "
+        params.append(estado)
+
+    # quita la coma  el espacio extra del final
+    query = query.rstrip(', ') + " WHERE if = ?"
+    params.append(id)
+
+    try:
+        conn.execute(query, tuple(params))
+        conn.commit()
+        
+        #devuelve la tarea actualizada
+        update_tarea = conn.execute('SELECT * FROM tareas WHERE id = ?', (id)).fetchone()
+        conn.close()
+
+    except sqlite3.Error as e:
+        conn.close()
+        return jsonify({"error": str(e)}), 500
