@@ -31,28 +31,25 @@ cd ToDo_API
 ### 3. Crear y Activar el entorno Virtual
 
 # Crear el entorno virtual
-python -m venv venv
+`python -m venv venv`
 
 # Activar en Windows (Git Bash)
-source venv/Scripts/activate
+`source venv/Scripts/activate`
 
-# Activar en macOS/Linux
-# source venv/bin/activate
 
 ### 4. Instalar dependencias
 
 Asegúrate de tener el entorno activado.
 
-```pip install -r requirements.txt
-```
+`pip install -r requirements.txt`
 
 ### 5.Ejecutar la Aplicaicion
 
-```flask run
-```
-¡La API ahora estará corriendo en http://127.0.0.1:5000!
+`flask run`
 
-## ⚡ Guía de Endpoints de la API
+La API ahora estará corriendo en http://127.0.0.1:5000
+
+## Guía de Endpoints de la API
 
 Puedes usar Postman o cURL para probar los endpoints.
 
